@@ -1,0 +1,160 @@
+##
+## Full-stack Docker Compose for Detonate
+## Usage: docker compose up --build
+##
+## This starts all services needed for a complete deployment:
+##   - PostgreSQL, Redis, MinIO, Ollama (infrastructure)
+##   - API server (FastAPI)
+##   - Celery worker (dynamic analysis, AI tasks, threat intel)
+##   - Frontend (Next.js)
+##
+
+services:
+  # ─── Infrastructure ──────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: detonate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-detonate}
+      POSTGRES_DB: detonate
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U detonate"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-detonate}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-detonatedev}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ─── API Server ──────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: detonate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-detonate}
+      POSTGRES_DB: detonate
+      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: redis
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-detonate}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-detonatedev}
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      OTX_API_KEY: ${OTX_API_KEY:-}
+      SCREENSHOTS_ENABLED: ${SCREENSHOTS_ENABLED:-false}
+      SURICATA_ENABLED: ${SURICATA_ENABLED:-false}
+      YARA_ENABLED: "true"
+      YARA_RULES_PATH: /app/sandbox/yara/rules
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker-in-Docker for sandbox
+      - ./sandbox/yara/rules:/app/sandbox/yara/rules:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command: >
+      sh -c "uv run alembic upgrade head &&
+             uv run uvicorn detonate.main:app --host 0.0.0.0 --port 8000"
+
+  # ─── Celery Worker ───────────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: detonate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-detonate}
+      POSTGRES_DB: detonate
+      REDIS_URL: redis://redis:6379/0
+      REDIS_HOST: redis
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-detonate}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-detonatedev}
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      YARA_ENABLED: "true"
+      YARA_RULES_PATH: /app/sandbox/yara/rules
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./sandbox/yara/rules:/app/sandbox/yara/rules:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      uv run celery -A worker.app:celery_app worker
+      --loglevel=info
+      -Q dynamic,static,ai,enrichment
+      --concurrency=2
+
+  # ─── Frontend ────────────────────────────────────────────────
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  ollama_data:

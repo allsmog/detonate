@@ -1,4 +1,4 @@
-.PHONY: dev api frontend services services-down migrate migration test-api lint format setup ollama-pull sandbox-build suricata-build mitre-pull
+.PHONY: dev api frontend services services-down migrate migration test-api lint format setup ollama-pull sandbox-build suricata-build mitre-pull up down build test
 
 # Start all dev services and both API + frontend
 dev: services
@@ -66,7 +66,30 @@ mitre-pull:
 		"https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json"
 	@echo "Downloaded MITRE ATT&CK data to sandbox/mitre/enterprise-attack.json"
 
-# Initial setup
+# ─── Full-stack Docker deployment ────────────────────────────
+
+# Build and start the full stack (API + Worker + Frontend + infra)
+up:
+	docker compose up --build -d
+	@echo "Detonate is running at http://localhost:3000"
+
+# Stop the full stack
+down:
+	docker compose down
+
+# Build all Docker images
+build:
+	docker compose build
+	$(MAKE) sandbox-build
+
+# Run all tests
+test: test-api test-frontend
+
+# Frontend type-check
+test-frontend:
+	cd frontend && npx tsc --noEmit
+
+# ─── Initial setup ───────────────────────────────────────────
 setup:
 	cp -n .env.example .env || true
 	cd api && uv sync

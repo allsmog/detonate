@@ -1,6 +1,6 @@
 # Detonate
 
-**Open-source malware analysis sandbox** -- a self-hosted alternative to [any.run](https://any.run).
+**Open-source malware analysis sandbox.**
 
 Submit files or URLs, execute them in an isolated Docker/QEMU sandbox, and observe behavior in real-time: process trees, network traffic, file drops, MITRE ATT&CK mapping, AI-powered analysis, and more.
 

@@ -131,7 +131,7 @@ rule Contains_IP_Address
         author = "Detonate"
 
     strings:
-        $ip = /\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\b/
+        $ip = /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/
 
     condition:
         #ip > 2
@@ -190,5 +190,5 @@ rule Suspicious_Python_Patterns
         $marshal = "marshal.loads" ascii
 
     condition:
-        ($exec or $eval or $compile) and 2 of ($import_*)
+        ($exec or $eval or $compile or $marshal) and 2 of ($import_*)
 }
