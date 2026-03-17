@@ -1,0 +1,133 @@
+%YAML 1.1
+---
+
+# Minimal Suricata configuration for offline PCAP analysis.
+# Only alert detection is needed - no live capture features.
+
+vars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!$HOME_NET"
+    HTTP_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    TELNET_SERVERS: "$HOME_NET"
+    AIM_SERVERS: "$EXTERNAL_NET"
+    DC_SERVERS: "$HOME_NET"
+    DNP3_SERVER: "$HOME_NET"
+    DNP3_CLIENT: "$HOME_NET"
+    MODBUS_CLIENT: "$HOME_NET"
+    MODBUS_SERVER: "$HOME_NET"
+    ENIP_CLIENT: "$HOME_NET"
+    ENIP_SERVER: "$HOME_NET"
+
+  port-groups:
+    HTTP_PORTS: "80"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+    FTP_PORTS: 21
+    GENEVE_PORTS: 6081
+    VXLAN_PORTS: 4789
+    TEREDO_PORTS: 3544
+
+# Default rule path from suricata-update
+default-rule-path: /var/lib/suricata/rules
+
+rule-files:
+  - suricata.rules
+
+# Logging outputs
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      pcap-file: false
+      community-id: false
+      types:
+        - alert:
+            payload: no
+            payload-printable: yes
+            packet: no
+            metadata: yes
+            http-body: no
+            http-body-printable: yes
+        - dns
+        - tls
+        - http
+
+  # Disable other log outputs for offline mode
+  - fast:
+      enabled: no
+  - unified2-alert:
+      enabled: no
+  - stats:
+      enabled: no
+
+# Logging configuration
+logging:
+  default-log-level: error
+  outputs:
+    - console:
+        enabled: no
+    - file:
+        enabled: no
+
+# App layer protocol detection
+app-layer:
+  protocols:
+    tls:
+      enabled: yes
+    http:
+      enabled: yes
+    dns:
+      enabled: yes
+      tcp:
+        enabled: yes
+      udp:
+        enabled: yes
+    smtp:
+      enabled: yes
+    ftp:
+      enabled: yes
+    ssh:
+      enabled: yes
+    imap:
+      enabled: detection-only
+    msn:
+      enabled: detection-only
+    smb:
+      enabled: yes
+    dcerpc:
+      enabled: yes
+    nfs:
+      enabled: yes
+    tftp:
+      enabled: yes
+    ikev2:
+      enabled: yes
+    ntp:
+      enabled: yes
+    dhcp:
+      enabled: yes
+
+# Detection engine settings
+detect:
+  profile: medium
+  sgh-mpm-context: auto
+
+# Run mode for offline PCAP processing
+runmode: single
+
+# Disable live capture interfaces
+pcap-file:
+  checksum-checks: no
+
+# Threading - single thread for offline mode
+threading:
+  set-cpu-affinity: no

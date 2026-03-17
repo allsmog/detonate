@@ -1,0 +1,374 @@
+<!--
+  Sysmon configuration for Detonate malware sandbox.
+
+  This configuration is optimized for malware analysis: it captures
+  comprehensive behavioral telemetry while filtering out noise that
+  would otherwise overwhelm analysis results.
+
+  Monitored events:
+    1  - Process Create (all, with hashes and command lines)
+    3  - Network Connection (all except localhost and agent port 8080)
+    5  - Process Terminate (all)
+    11 - File Create (filtered to reduce noise from system temp files)
+    13 - Registry Value Set (persistence keys, services, security settings)
+    22 - DNS Query (all)
+
+  Install:
+    sysmon.exe -accepteula -i sysmon_config.xml
+
+  Update:
+    sysmon.exe -c sysmon_config.xml
+-->
+<Sysmon schemaversion="4.90">
+
+  <!-- Hash all executables with SHA256 and MD5 -->
+  <HashAlgorithms>SHA256,MD5</HashAlgorithms>
+
+  <!-- Check revocation status of loaded images -->
+  <CheckRevocation>true</CheckRevocation>
+
+  <EventFiltering>
+
+    <!--
+    ================================================================
+    Event ID 1: Process Create
+    Log ALL process creation events. This is the most important
+    event for behavioral analysis - captures full command lines,
+    parent-child relationships, hashes, and integrity levels.
+    ================================================================
+    -->
+    <RuleGroup name="ProcessCreate" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <!-- Exclude only Sysmon's own process creation -->
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 2: File Creation Time Changed
+    Disabled - not critical for sandbox analysis and produces
+    significant noise.
+    ================================================================
+    -->
+    <RuleGroup name="FileCreateTime" groupRelation="or">
+      <FileCreateTime onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 3: Network Connection
+    Log ALL outbound network connections except:
+    - Localhost (127.0.0.1, ::1)
+    - Guest agent communication (port 8080)
+    - Windows telemetry noise
+    ================================================================
+    -->
+    <RuleGroup name="NetworkConnect" groupRelation="or">
+      <NetworkConnect onmatch="exclude">
+        <!-- Exclude localhost connections -->
+        <DestinationIp condition="is">127.0.0.1</DestinationIp>
+        <DestinationIp condition="is">::1</DestinationIp>
+        <DestinationIp condition="is">0.0.0.0</DestinationIp>
+
+        <!-- Exclude guest agent HTTP port -->
+        <DestinationPort condition="is">8080</DestinationPort>
+        <SourcePort condition="is">8080</SourcePort>
+
+        <!-- Exclude Sysmon itself -->
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 4: Sysmon Service State Changed
+    Always logged by Sysmon (cannot be filtered).
+    ================================================================
+    -->
+
+    <!--
+    ================================================================
+    Event ID 5: Process Terminated
+    Log ALL process terminations to track process lifetimes.
+    ================================================================
+    -->
+    <RuleGroup name="ProcessTerminate" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <!-- Exclude only Sysmon itself -->
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+      </ProcessTerminate>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 6: Driver Loaded
+    Disabled - not typically relevant for user-mode malware
+    analysis in sandbox.
+    ================================================================
+    -->
+    <RuleGroup name="DriverLoad" groupRelation="or">
+      <DriverLoad onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 7: Image Loaded (DLL)
+    Disabled by default - extremely noisy. Enable for DLL
+    sideloading analysis by changing to exclude-based filtering.
+    ================================================================
+    -->
+    <RuleGroup name="ImageLoad" groupRelation="or">
+      <ImageLoad onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 8: CreateRemoteThread
+    Log all remote thread creation - strong indicator of process
+    injection.
+    ================================================================
+    -->
+    <RuleGroup name="CreateRemoteThread" groupRelation="or">
+      <CreateRemoteThread onmatch="exclude">
+        <!-- Exclude known Windows internal remote threads -->
+        <SourceImage condition="is">C:\Windows\System32\csrss.exe</SourceImage>
+      </CreateRemoteThread>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 9: RawAccessRead
+    Disabled - produces excessive noise for most sandbox use cases.
+    ================================================================
+    -->
+    <RuleGroup name="RawAccessRead" groupRelation="or">
+      <RawAccessRead onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 10: ProcessAccess
+    Disabled - very noisy. Enable selectively if analyzing
+    credential theft or process injection.
+    ================================================================
+    -->
+    <RuleGroup name="ProcessAccess" groupRelation="or">
+      <ProcessAccess onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 11: File Create
+    Log file creation with noise reduction. Excludes:
+    - Browser cache and temp files
+    - Windows Update temp files
+    - Prefetch files
+    - Font cache
+    Includes all file creation in user-writable locations.
+    ================================================================
+    -->
+    <RuleGroup name="FileCreate" groupRelation="or">
+      <FileCreate onmatch="exclude">
+        <!-- Browser cache and temp directories -->
+        <TargetFilename condition="contains">\AppData\Local\Google\Chrome\User Data\Default\Cache</TargetFilename>
+        <TargetFilename condition="contains">\AppData\Local\Microsoft\Edge\User Data\Default\Cache</TargetFilename>
+        <TargetFilename condition="contains">\AppData\Local\Mozilla\Firefox\Profiles\</TargetFilename>
+
+        <!-- Windows Update and system temp noise -->
+        <TargetFilename condition="begin with">C:\Windows\SoftwareDistribution\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\Prefetch\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\Installer\</TargetFilename>
+
+        <!-- Font cache -->
+        <TargetFilename condition="contains">\AppData\Local\Microsoft\FontCache</TargetFilename>
+
+        <!-- Windows Defender signature updates -->
+        <TargetFilename condition="begin with">C:\ProgramData\Microsoft\Windows Defender\</TargetFilename>
+
+        <!-- Sysmon's own log -->
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+
+        <!-- Event log files -->
+        <TargetFilename condition="end with">.evtx</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 12: Registry Object Added or Deleted
+    Disabled separately - Event 13 covers value changes which
+    are more relevant for behavioral analysis.
+    ================================================================
+    -->
+    <RuleGroup name="RegistryEvent_12" groupRelation="or">
+      <RegistryEvent onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 13: Registry Value Set
+    Log registry modifications focused on persistence mechanisms,
+    security policy changes, and common malware targets.
+    ================================================================
+    -->
+    <RuleGroup name="RegistryEvent_13" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <!-- Startup / Persistence - Run keys -->
+        <TargetObject condition="contains">\CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\RunOnce</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\RunOnceEx</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\RunServices</TargetObject>
+
+        <!-- Startup folder shell link -->
+        <TargetObject condition="contains">\Explorer\User Shell Folders</TargetObject>
+        <TargetObject condition="contains">\Explorer\Shell Folders</TargetObject>
+
+        <!-- Services (new service creation / modification) -->
+        <TargetObject condition="contains">\Services\</TargetObject>
+
+        <!-- Scheduled tasks -->
+        <TargetObject condition="contains">\Schedule\TaskCache\</TargetObject>
+
+        <!-- Image File Execution Options (debugger hijack) -->
+        <TargetObject condition="contains">\Image File Execution Options\</TargetObject>
+
+        <!-- AppInit DLLs (DLL injection at process start) -->
+        <TargetObject condition="contains">\Windows\CurrentVersion\Windows\AppInit_DLLs</TargetObject>
+
+        <!-- Winlogon (credential theft / persistence) -->
+        <TargetObject condition="contains">\Winlogon\</TargetObject>
+
+        <!-- Security policy changes -->
+        <TargetObject condition="contains">\Policies\Microsoft\Windows\</TargetObject>
+        <TargetObject condition="contains">\Policies\Microsoft\Windows Defender\</TargetObject>
+
+        <!-- COM object hijacking -->
+        <TargetObject condition="contains">\Classes\CLSID\</TargetObject>
+
+        <!-- Internet settings (proxy, security zones) -->
+        <TargetObject condition="contains">\Internet Settings\</TargetObject>
+
+        <!-- Windows Firewall rules -->
+        <TargetObject condition="contains">\FirewallPolicy\</TargetObject>
+
+        <!-- PowerShell execution policy -->
+        <TargetObject condition="contains">\PowerShell\</TargetObject>
+
+        <!-- LSA / credential providers -->
+        <TargetObject condition="contains">\Control\Lsa\</TargetObject>
+        <TargetObject condition="contains">\Authentication\Credential Providers\</TargetObject>
+
+        <!-- Boot Execute (early-start persistence) -->
+        <TargetObject condition="contains">\Session Manager\BootExecute</TargetObject>
+
+        <!-- File associations (extension hijacking) -->
+        <TargetObject condition="contains">\Classes\exefile\</TargetObject>
+        <TargetObject condition="contains">\Classes\.exe\</TargetObject>
+
+        <!-- Terminal Server / RDP settings -->
+        <TargetObject condition="contains">\Terminal Server\</TargetObject>
+
+        <!-- Certificate store manipulation -->
+        <TargetObject condition="contains">\SystemCertificates\</TargetObject>
+
+        <!-- Debugger / Error reporting (anti-analysis) -->
+        <TargetObject condition="contains">\Windows Error Reporting\</TargetObject>
+        <TargetObject condition="contains">\AeDebug\</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 14: Registry Object Renamed
+    Disabled - rare and not typically used by malware.
+    ================================================================
+    -->
+    <RuleGroup name="RegistryEvent_14" groupRelation="or">
+      <RegistryEvent onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 15: FileCreateStreamHash
+    Disabled - alternate data streams. Enable for advanced analysis.
+    ================================================================
+    -->
+    <RuleGroup name="FileCreateStreamHash" groupRelation="or">
+      <FileCreateStreamHash onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 17/18: Pipe Created / Pipe Connected
+    Disabled - noisy and specialized. Enable for C2 analysis.
+    ================================================================
+    -->
+    <RuleGroup name="PipeEvent_17" groupRelation="or">
+      <PipeEvent onmatch="include" />
+    </RuleGroup>
+    <RuleGroup name="PipeEvent_18" groupRelation="or">
+      <PipeEvent onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 22: DNS Query
+    Log ALL DNS queries. This is high-value, low-noise telemetry
+    that reveals C2 domains, data exfiltration, and DGA activity.
+    ================================================================
+    -->
+    <RuleGroup name="DnsQuery" groupRelation="or">
+      <DnsQuery onmatch="exclude">
+        <!-- Exclude Sysmon's own DNS lookups -->
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+      </DnsQuery>
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 23: File Delete (archived)
+    Disabled - file archiving consumes significant disk space.
+    Event 26 (FileDeleteDetected) is lighter if needed.
+    ================================================================
+    -->
+    <RuleGroup name="FileDelete" groupRelation="or">
+      <FileDelete onmatch="include" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 25: ProcessTampering
+    Log all process tampering (process hollowing, herpaderping).
+    Strong indicator of advanced malware techniques.
+    ================================================================
+    -->
+    <RuleGroup name="ProcessTampering" groupRelation="or">
+      <ProcessTampering onmatch="exclude" />
+    </RuleGroup>
+
+    <!--
+    ================================================================
+    Event ID 26: FileDeleteDetected
+    Log file deletions (lightweight, no archiving). Useful for
+    detecting malware self-deletion and evidence destruction.
+    ================================================================
+    -->
+    <RuleGroup name="FileDeleteDetected" groupRelation="or">
+      <FileDeleteDetected onmatch="exclude">
+        <!-- Exclude temp file cleanup noise -->
+        <TargetFilename condition="begin with">C:\Windows\Prefetch\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\SoftwareDistribution\</TargetFilename>
+        <Image condition="end with">Sysmon.exe</Image>
+        <Image condition="end with">Sysmon64.exe</Image>
+      </FileDeleteDetected>
+    </RuleGroup>
+
+  </EventFiltering>
+
+</Sysmon>

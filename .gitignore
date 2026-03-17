@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+
+# Docker
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+!.env.example
+
+# MinIO data
+minio_data/
+
+# Postgres data
+postgres_data/
+
+# Redis data
+redis_data/
+
+# UV
+.python-version
+
+# Claude Code
+.claude/
+
+# MITRE ATT&CK data (downloaded, large)
+sandbox/mitre/enterprise-attack.json
+
+# Misc
+*.bak
+*.tmp
+nohup.out
