@@ -699,6 +699,28 @@ def run(sample_path: str, timeout: int, enable_pcap: bool = False) -> dict:
     enable_screenshots = os.environ.get("DETONATE_SCREENSHOTS", "0") == "1"
     enable_vnc = os.environ.get("DETONATE_VNC", "0") == "1"
     screenshot_interval = float(os.environ.get("DETONATE_SCREENSHOT_INTERVAL", "1.0"))
+    enable_anti_evasion = os.environ.get("DETONATE_ANTI_EVASION", "0") == "1"
+    enable_sleep_patch = os.environ.get("DETONATE_SLEEP_PATCH", "0") == "1"
+    enable_mem_dump = os.environ.get("DETONATE_MEM_DUMP", "0") == "1"
+    enable_network_sim = os.environ.get("DETONATE_NETWORK_SIM", "0") == "1"
+    fake_hostname = os.environ.get("DETONATE_FAKE_HOSTNAME", "DESKTOP-UF3R7K9")
+
+    anti_evasion_summary: dict = {}
+    network_sim_summary: dict = {}
+    if enable_anti_evasion:
+        try:
+            from anti_evasion import prepare_sandbox  # type: ignore[import-not-found]
+            anti_evasion_summary = prepare_sandbox(fake_hostname)
+        except Exception as exc:
+            anti_evasion_summary = {"error": repr(exc)}
+
+    if enable_network_sim:
+        try:
+            sys.path.insert(0, "/opt/agent")
+            from network_sim import start_all  # type: ignore[import-not-found]
+            network_sim_summary = start_all()
+        except Exception as exc:
+            network_sim_summary = {"error": repr(exc)}
 
     before = snapshot_fs(WATCH_DIRS)
 
@@ -734,11 +756,22 @@ def run(sample_path: str, timeout: int, enable_pcap: bool = False) -> dict:
         sample_path,
     ]
 
+    sample_env = {**os.environ}
+    if enable_sleep_patch and os.path.exists("/opt/agent/sleep_patch.so"):
+        existing = sample_env.get("LD_PRELOAD", "")
+        sample_env["LD_PRELOAD"] = (
+            "/opt/agent/sleep_patch.so"
+            if not existing
+            else f"/opt/agent/sleep_patch.so:{existing}"
+        )
+
     start = time.time()
     timed_out = False
     stdout_data = ""
     stderr_data = ""
     exit_code = -1
+    sample_pid: int | None = None
+    memory_artifacts: dict = {}
 
     # Open the events JSONL file for real-time streaming
     os.makedirs(os.path.dirname(EVENTS_PATH) or "/tmp", exist_ok=True)
@@ -752,7 +785,9 @@ def run(sample_path: str, timeout: int, enable_pcap: bool = False) -> dict:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd="/tmp",
+            env=sample_env,
         )
+        sample_pid = proc.pid
 
         # Start tailing strace output in a background thread
         tail_thread = threading.Thread(
@@ -768,6 +803,14 @@ def run(sample_path: str, timeout: int, enable_pcap: bool = False) -> dict:
             stderr_data = err.decode(errors="replace")[:4096]
             exit_code = proc.returncode
         except subprocess.TimeoutExpired:
+            # Capture memory before killing if requested
+            if enable_mem_dump and sample_pid:
+                try:
+                    sys.path.insert(0, "/opt/agent")
+                    from mem_dump import collect_pid  # type: ignore[import-not-found]
+                    memory_artifacts = collect_pid(sample_pid)
+                except Exception as exc:
+                    memory_artifacts = {"error": repr(exc)}
             proc.kill()
             out, err = proc.communicate()
             stdout_data = out.decode(errors="replace")[:4096]
@@ -840,6 +883,37 @@ def run(sample_path: str, timeout: int, enable_pcap: bool = False) -> dict:
 
     # Run YARA scanning on sample and dropped files
     result["yara"] = run_yara_scanning(sample_path, created, modified)
+
+    # Anti-evasion / network-sim / memory-dump artifacts
+    if enable_anti_evasion:
+        result["anti_evasion"] = anti_evasion_summary
+    if enable_network_sim:
+        # Read whatever the in-container responders logged
+        sim_data: dict = {"started": network_sim_summary, "dns_log": [], "http_log": []}
+        for path, key in (("/tmp/network_sim_dns.jsonl", "dns_log"),
+                          ("/tmp/network_sim_http.jsonl", "http_log")):
+            if os.path.exists(path):
+                try:
+                    with open(path) as f:
+                        for line in f:
+                            line = line.strip()
+                            if not line:
+                                continue
+                            try:
+                                sim_data[key].append(json.loads(line))
+                            except Exception:
+                                pass
+                except OSError:
+                    pass
+        result["network_sim"] = sim_data
+    if enable_sleep_patch and os.path.exists("/tmp/sleep_patch.log"):
+        try:
+            with open("/tmp/sleep_patch.log") as f:
+                result["sleep_patch_log"] = f.read()[:65536]
+        except OSError:
+            pass
+    if enable_mem_dump and memory_artifacts:
+        result["memory_artifacts"] = memory_artifacts
 
     # Collect screenshots and assemble video if screenshots were enabled
     if enable_screenshots:

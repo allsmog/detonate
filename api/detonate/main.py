@@ -15,6 +15,7 @@ from detonate.api.routes import (
     chat,
     comments,
     dashboard,
+    detection_rules,
     health,
     ioc_export,
     machines,
@@ -22,6 +23,7 @@ from detonate.api.routes import (
     network_analysis,
     reports,
     search,
+    similar,
     static_analysis,
     submissions,
     teams,
@@ -140,6 +142,8 @@ def create_app() -> FastAPI:
     app.include_router(network_analysis.router, prefix="/api/v1")
     app.include_router(yara_management.router, prefix="/api/v1")
     app.include_router(settings_routes.router, prefix="/api/v1")
+    app.include_router(detection_rules.router, prefix="/api/v1")
+    app.include_router(similar.router, prefix="/api/v1")
 
     return app
 

@@ -276,32 +276,92 @@ def analyze_elf(data: bytes) -> dict | None:
     return result
 
 
-async def run_static_analysis(file_data: bytes, filename: str) -> dict:
-    """Run all static analysis on file data. Returns comprehensive results."""
+async def run_static_analysis(
+    file_data: bytes,
+    filename: str,
+    mime: str | None = None,
+) -> dict:
+    """Run all applicable static analysis on file data.
+
+    Always emits ``entropy`` and ``strings``. Adds ``pe`` / ``elf`` /
+    ``office`` / ``pdf`` / ``script`` / ``email`` / ``archive`` / ``apk``
+    sections when the relevant analyzer is enabled in settings *and* the
+    file matches that type. Each specialized analyzer is best-effort and
+    failures are isolated so one bad analyzer cannot break the whole
+    response.
+    """
+    from detonate.config import settings as _settings
+
     results: dict[str, Any] = {}
-
-    # Entropy
     results["entropy"] = analyze_entropy(file_data)
-
-    # Strings
     results["strings"] = extract_strings(file_data)
 
-    # PE analysis
     pe_result = analyze_pe(file_data)
     if pe_result:
         results["pe"] = pe_result
-        # Add per-section entropy to overall entropy
-        section_entropies = {
+        results["entropy"]["sections"] = {
             s["name"]: s["entropy"] for s in pe_result.get("sections", [])
         }
-        results["entropy"]["sections"] = section_entropies
 
-    # ELF analysis
     elf_result = analyze_elf(file_data)
     if elf_result:
         results["elf"] = elf_result
 
+    # ----- Specialized analyzers (mime/extension dispatch) -----------
+    def _safe(label: str, fn) -> None:
+        try:
+            data = fn()
+            if data:
+                results[label] = data
+        except Exception as exc:
+            logger.warning("Analyzer '%s' failed: %s", label, exc)
+            results.setdefault("analyzer_errors", {})[label] = str(exc)
+
+    if _settings.office_analyzer_enabled:
+        from detonate.services.office_analyzer import analyze_office, is_office_file
+        if is_office_file(filename, mime, file_data):
+            _safe("office", lambda: analyze_office(file_data, filename))
+
+    if _settings.pdf_analyzer_enabled:
+        from detonate.services.pdf_analyzer import analyze_pdf, is_pdf
+        if is_pdf(filename, mime, file_data):
+            _safe("pdf", lambda: analyze_pdf(file_data, filename))
+
+    if _settings.script_analyzer_enabled:
+        from detonate.services.script_analyzer import analyze_script, is_script_file
+        if is_script_file(filename, mime):
+            _safe("script", lambda: analyze_script(file_data, filename))
+
+    if _settings.email_analyzer_enabled:
+        from detonate.services.email_analyzer import analyze_email, is_email_file
+        if is_email_file(filename, mime, file_data):
+            _safe("email", lambda: analyze_email(file_data, filename))
+
+    if _settings.apk_analyzer_enabled:
+        from detonate.services.apk_analyzer import analyze_apk, is_apk
+        if is_apk(filename, mime, file_data):
+            _safe("apk", lambda: analyze_apk(file_data, filename))
+
+    # Archive analyzer is *separate* from APK detection because both look
+    # like ZIPs; APK match takes priority via the mime check.
+    if _settings.archive_analyzer_enabled and "apk" not in results:
+        from detonate.services.archive_analyzer import analyze_archive, is_archive
+        if is_archive(filename, mime, file_data) and not (filename or "").lower().endswith((".docx", ".xlsx", ".pptm", ".pptx", ".docm", ".xlsm")):
+            _safe("archive", lambda: analyze_archive(
+                file_data,
+                filename,
+                passwords=_settings.archive_default_passwords,
+            ))
+
+    if _settings.similarity_enabled:
+        from detonate.services.similarity import compute_similarity_hashes
+        try:
+            results["similarity"] = compute_similarity_hashes(file_data, results)
+        except Exception as exc:
+            logger.warning("Similarity hashing failed: %s", exc)
+
     results["file_size"] = len(file_data)
     results["filename"] = filename
+    results["mime"] = mime or ""
 
     return results

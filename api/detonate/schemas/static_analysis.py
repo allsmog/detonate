@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -105,6 +107,16 @@ class StaticAnalysisResponse(BaseModel):
     elf: ELFAnalysisResult | None = None
     file_size: int = 0
     filename: str = ""
+    mime: str = ""
+    # Specialized analyzers (any of these may be absent)
+    office: dict[str, Any] | None = None
+    pdf: dict[str, Any] | None = None
+    script: dict[str, Any] | None = None
+    email: dict[str, Any] | None = None
+    archive: dict[str, Any] | None = None
+    apk: dict[str, Any] | None = None
+    similarity: dict[str, Any] | None = None
+    analyzer_errors: dict[str, str] | None = None
 
 
 class StringsSearchResponse(BaseModel):

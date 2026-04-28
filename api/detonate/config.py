@@ -78,6 +78,36 @@ class Settings(BaseSettings):
     suricata_enabled: bool = False
     suricata_image: str = "detonate-suricata"
 
+    # Specialized static analyzers (auto-disabled if dependency missing)
+    office_analyzer_enabled: bool = True
+    pdf_analyzer_enabled: bool = True
+    script_analyzer_enabled: bool = True
+    email_analyzer_enabled: bool = True
+    archive_analyzer_enabled: bool = True
+    apk_analyzer_enabled: bool = True
+    similarity_enabled: bool = True
+    archive_max_recursion_depth: int = 4
+    archive_default_passwords: list[str] = ["infected", "malware", "virus", "password"]
+
+    # Detection-engineering output
+    yara_generator_enabled: bool = True
+    sigma_generator_enabled: bool = True
+    suricata_generator_enabled: bool = True
+
+    # Threat-intel: extra providers
+    threatfox_api_key: SecretStr = SecretStr("")  # optional, public endpoint works without
+    misp_url: str = ""
+    misp_api_key: SecretStr = SecretStr("")
+    misp_verify_tls: bool = True
+    misp_publish: bool = False  # whether to push observed IOCs
+
+    # Sandbox anti-evasion / enrichment (read by guest_agent via env vars)
+    sandbox_anti_evasion_enabled: bool = False
+    sandbox_sleep_patch_enabled: bool = False
+    sandbox_memory_dump_enabled: bool = False
+    sandbox_network_sim_enabled: bool = False
+    sandbox_fake_hostname: str = "DESKTOP-UF3R7K9"
+
     @property
     def database_url(self) -> str:
         return (

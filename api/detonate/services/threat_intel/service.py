@@ -30,13 +30,16 @@ class ThreatIntelService:
     def _init_providers(self) -> None:
         from detonate.services.threat_intel.abuseipdb import AbuseIPDBProvider
         from detonate.services.threat_intel.malwarebazaar import MalwareBazaarProvider
+        from detonate.services.threat_intel.misp import MISPProvider
         from detonate.services.threat_intel.otx import OTXProvider
+        from detonate.services.threat_intel.threatfox import ThreatFoxProvider
         from detonate.services.threat_intel.urlhaus import URLhausProvider
         from detonate.services.threat_intel.virustotal import VirusTotalProvider
 
         for cls in (
             VirusTotalProvider, AbuseIPDBProvider, OTXProvider,
             URLhausProvider, MalwareBazaarProvider,
+            ThreatFoxProvider, MISPProvider,
         ):
             provider = cls()
             if provider.is_configured():
@@ -208,10 +211,18 @@ class ThreatIntelService:
     def get_status(self) -> list[dict[str, Any]]:
         """Return the configuration state of every known provider."""
         from detonate.services.threat_intel.abuseipdb import AbuseIPDBProvider
+        from detonate.services.threat_intel.malwarebazaar import MalwareBazaarProvider
+        from detonate.services.threat_intel.misp import MISPProvider
         from detonate.services.threat_intel.otx import OTXProvider
+        from detonate.services.threat_intel.threatfox import ThreatFoxProvider
+        from detonate.services.threat_intel.urlhaus import URLhausProvider
         from detonate.services.threat_intel.virustotal import VirusTotalProvider
 
-        all_providers = [VirusTotalProvider(), AbuseIPDBProvider(), OTXProvider()]
+        all_providers = [
+            VirusTotalProvider(), AbuseIPDBProvider(), OTXProvider(),
+            URLhausProvider(), MalwareBazaarProvider(),
+            ThreatFoxProvider(), MISPProvider(),
+        ]
         return [
             {"name": p.name, "configured": p.is_configured()}
             for p in all_providers

@@ -98,6 +98,31 @@ class DockerMachinery(BaseMachinery):
             if config.get("vnc", False):
                 env_vars["DETONATE_VNC"] = "1"
 
+            # Sandbox enrichment toggles. Settings provide global defaults
+            # but a per-analysis ``config`` may override.
+            try:
+                from detonate.config import settings as _settings
+            except Exception:
+                _settings = None  # type: ignore[assignment]
+
+            def _flag(name: str, default: bool) -> bool:
+                if name in config:
+                    return bool(config[name])
+                if _settings is not None:
+                    return bool(getattr(_settings, name, default))
+                return default
+
+            if _flag("sandbox_anti_evasion_enabled", False):
+                env_vars["DETONATE_ANTI_EVASION"] = "1"
+                if _settings is not None and getattr(_settings, "sandbox_fake_hostname", ""):
+                    env_vars["DETONATE_FAKE_HOSTNAME"] = _settings.sandbox_fake_hostname
+            if _flag("sandbox_sleep_patch_enabled", False):
+                env_vars["DETONATE_SLEEP_PATCH"] = "1"
+            if _flag("sandbox_memory_dump_enabled", False):
+                env_vars["DETONATE_MEM_DUMP"] = "1"
+            if _flag("sandbox_network_sim_enabled", False):
+                env_vars["DETONATE_NETWORK_SIM"] = "1"
+
             if network_enabled and network:
                 create_kwargs["network"] = network_name
                 env_vars["DETONATE_PCAP"] = "1"

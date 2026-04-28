@@ -50,7 +50,8 @@ async def _run_or_get_cached(
         )
 
     filename = submission.filename or "unknown"
-    return await run_static_analysis(file_data, filename)
+    mime = getattr(submission, "mime_type", None)
+    return await run_static_analysis(file_data, filename, mime=mime)
 
 
 @router.get(
