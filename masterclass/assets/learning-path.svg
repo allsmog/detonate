@@ -1,0 +1,40 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='860' height='620' viewBox='0 0 860 620'>
+<rect width='860' height='620' fill='#ffffff'/>
+<text x='14' y='34' font-size='20' fill='#0f172a' font-weight='700' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Detonate Masterclass — learning path</text>
+<rect x='14' y='58' width='832' height='64' rx='8' fill='#dbeafe' stroke='#3b82f6' stroke-width='1.5'/>
+<circle cx='40' cy='90.0' r='16' fill='#3b82f6'/>
+<text x='40' y='95.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>1</text>
+<text x='66' y='84' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 1 — Foundations</text>
+<text x='66' y='104' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>PE/ELF · asm · toolchain · triage</text>
+<rect x='84' y='134' width='762' height='64' rx='8' fill='#dcfce7' stroke='#22c55e' stroke-width='1.5'/>
+<circle cx='110' cy='166.0' r='16' fill='#22c55e'/>
+<text x='110' y='171.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>2</text>
+<text x='136' y='160' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 2 — Static Analysis</text>
+<text x='136' y='180' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>strings · imports · entropy · YARA</text>
+<rect x='154' y='210' width='692' height='64' rx='8' fill='#fef9c3' stroke='#eab308' stroke-width='1.5'/>
+<circle cx='180' cy='242.0' r='16' fill='#eab308'/>
+<text x='180' y='247.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>3</text>
+<text x='206' y='236' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 3 — Dynamic Analysis</text>
+<text x='206' y='256' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>process tree · network/C2 · MITRE</text>
+<rect x='224' y='286' width='622' height='64' rx='8' fill='#ffedd5' stroke='#f97316' stroke-width='1.5'/>
+<circle cx='250' cy='318.0' r='16' fill='#f97316'/>
+<text x='250' y='323.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>4</text>
+<text x='276' y='312' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 4 — Unpacking &amp; Deobfuscation</text>
+<text x='276' y='332' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>UPX · custom packers · obfuscation</text>
+<rect x='294' y='362' width='552' height='64' rx='8' fill='#fee2e2' stroke='#ef4444' stroke-width='1.5'/>
+<circle cx='320' cy='394.0' r='16' fill='#ef4444'/>
+<text x='320' y='399.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>5</text>
+<text x='346' y='388' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 5 — Anti-Analysis</text>
+<text x='346' y='408' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>VM/sandbox · anti-debug · evasion</text>
+<rect x='364' y='438' width='482' height='64' rx='8' fill='#f3e8ff' stroke='#a855f7' stroke-width='1.5'/>
+<circle cx='390' cy='470.0' r='16' fill='#a855f7'/>
+<text x='390' y='475.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>6</text>
+<text x='416' y='464' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 6 — Config &amp; IOC Extraction</text>
+<text x='416' y='484' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>decrypt config · extractor · STIX</text>
+<rect x='434' y='514' width='412' height='64' rx='8' fill='#e0e7ff' stroke='#6366f1' stroke-width='1.5'/>
+<circle cx='460' cy='546.0' r='16' fill='#6366f1'/>
+<text x='460' y='551.0' font-size='16' fill='#ffffff' font-weight='700' text-anchor='middle' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>7</text>
+<text x='486' y='540' font-size='15' fill='#0f172a' font-weight='600' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Level 7 — Capstone</text>
+<text x='486' y='560' font-size='12' fill='#475569' font-weight='400' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>unknown sample · full kill chain · report</text>
+<text x='14' y='608' font-size='12' fill='#475569' font-weight='500' text-anchor='start' font-family='ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial'>Supplements: Windows/PE · Real-sample practice · CTF challenges (auto-graded)</text>
+</svg>

@@ -8,6 +8,8 @@ following labs and being an analyst.*
 
 ---
 
+![Capstone kill chain](../assets/kill-chain.svg)
+
 ## Two ways to take the capstone
 
 **Path A — the self-contained challenge (recommended, fully reproducible).**

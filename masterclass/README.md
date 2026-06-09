@@ -10,6 +10,8 @@ with this repository. You submit real (and purpose-built) samples, watch them
 execute, read the telemetry the platform captures, and answer concrete
 questions. Solutions are provided, but you learn by doing first.
 
+![Learning path](assets/learning-path.svg)
+
 ---
 
 ## Who this is for

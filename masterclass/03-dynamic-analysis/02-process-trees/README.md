@@ -55,6 +55,8 @@ from the PIDs in `clone`/`clone3` (see `parse_strace` in
 
 ## Lab
 
+![Process tree](../../assets/process-tree.svg)
+
 **Sample:** [`multistage.c`](multistage.c) — `stage0` forks a child that
 `execve`s `/bin/echo` (standing in for a dropped payload).
 
