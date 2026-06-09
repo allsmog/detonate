@@ -19,12 +19,12 @@ Usage:    python3 emulate.py
 from __future__ import annotations
 
 from unicorn import (
-    UC_ARCH_X86, UC_MODE_64, UC_PROT_ALL, Uc,
+    UC_ARCH_X86, UC_MODE_64, Uc,
     UC_HOOK_CODE,
 )
 from unicorn.x86_const import (
     UC_X86_REG_RDI, UC_X86_REG_RSI, UC_X86_REG_RDX,
-    UC_X86_REG_RSP, UC_X86_REG_RIP,
+    UC_X86_REG_RSP,
 )
 
 # Real gcc output for the leaf routine `dec(buf, n, key)` (ends in 0xc3 RET).

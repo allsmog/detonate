@@ -30,6 +30,12 @@ backfill only what you're missing.
 
 ---
 
+## Platform integration
+
+The platform doubles as an **auto-graded CTF** — each [challenge](PLATFORM-INTEGRATION.md) maps to a lab and the flag is the value you recover. See [PLATFORM-INTEGRATION.md](PLATFORM-INTEGRATION.md) for how the curriculum and the Detonate engine fit together (and how it was verified live).
+
+---
+
 ## ⚠️ Before you touch a sample: read [SAFETY.md](SAFETY.md)
 
 You will handle live malicious code. There is a right way and a career-ending
