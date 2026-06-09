@@ -545,3 +545,41 @@ export interface StaticAnalysisResponse {
   file_size: number;
   filename: string;
 }
+
+// --- CTF Challenges ---
+export interface ChallengeSummary {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  points: number;
+  hints: string[];
+  module_ref: string | null;
+  solved: boolean;
+  solve_count: number;
+}
+
+export interface ChallengeListResponse {
+  challenges: ChallengeSummary[];
+  total: number;
+  total_points: number;
+}
+
+export interface FlagSubmitResponse {
+  correct: boolean;
+  slug: string;
+  points_awarded: number;
+  first_solve: boolean;
+  message: string;
+}
+
+export interface LeaderboardEntry {
+  player: string;
+  points: number;
+  solves: number;
+}
+
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+}
