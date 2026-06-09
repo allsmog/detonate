@@ -36,3 +36,16 @@ jobs:
             exit 1
           fi
           echo "No committed sample binaries. Good."
+
+  masterclass-labs:
+    name: Masterclass lab harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install RE toolchain (best-effort; harness SKIPs anything missing)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q gcc gdb binutils strace file upx-ucl yara || true
+          python3 -m pip install --quiet unicorn || true
+      - name: Build & test every training binary
+        run: bash masterclass/tools/build_and_test.sh

@@ -8,15 +8,31 @@ following labs and being an analyst.*
 
 ---
 
-## The challenge
+## Two ways to take the capstone
 
-You are handed an unknown sample (you fetch it yourself by SHA-256 from
-MalwareBazaar per [SAFETY §3](../SAFETY.md); the challenge file below gives you
-the hash and nothing else). Your job: analyze it end to end and produce the
-report a SOC or threat-intel team would actually use.
+**Path A — the self-contained challenge (recommended, fully reproducible).**
+This repo ships a purpose-built *benign* challenge that combines every technique
+from Levels 1–6 — UPX packing, ptrace anti-debug, an XOR-obfuscated string, an
+RC4-encrypted config behind a `CFG0` marker, and a C2 beacon. An instructor (or
+you) builds it once:
 
-No one tells you whether it's packed, what family it is, or what it does. You
-decide the approach. That's the point.
+```bash
+cd challenge && bash build.sh      # produces ./crackmalware (gitignored)
+```
+
+Then analyze **`crackmalware`** with no other information. The source
+(`challenge_src.c`) and the sealed answer key (`SOLUTION.md`) exist in the repo
+for instructors/self-grading — **do not read them until your report is done.**
+A full verified walkthrough and grading key live in
+[`challenge/SOLUTION.md`](challenge/SOLUTION.md).
+
+**Path B — a real sample.** For the authentic experience, fetch a real,
+well-documented commodity sample yourself by SHA-256 from MalwareBazaar per
+[SAFETY §3](../SAFETY.md), in your isolated lab. No one tells you whether it's
+packed, what family it is, or what it does — you decide the approach.
+
+Either way: analyze end to end and produce the report a SOC or threat-intel team
+would actually use.
 
 ## What to produce
 
