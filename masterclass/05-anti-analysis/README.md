@@ -11,9 +11,9 @@ code in a debugger). **Read [SAFETY.md](../SAFETY.md).**
 
 | # | Module | Status |
 |---|--------|--------|
-| 5.1 | Sandbox & VM detection | 📝 Outlined below |
-| 5.2 | Debugger detection & anti-debug | 📝 Outlined below |
-| 5.3 | Evasion in the wild | 📝 Outlined below |
+| 5.1 | [Sandbox & VM detection](01-sandbox-vm-detection/) | ✅ Built |
+| 5.2 | [Debugger detection & anti-debug](02-debugger-detection/) | ✅ Built |
+| 5.3 | [Evasion in the wild](03-evasion-in-the-wild/) | ✅ Built |
 
 ---
 
