@@ -11,10 +11,10 @@ debugger. **Read [SAFETY.md](../SAFETY.md).**
 
 | # | Module | Status |
 |---|--------|--------|
-| 4.1 | UPX & common packers | 📝 Outlined below |
-| 4.2 | Custom packers & unpacking stubs | 📝 Outlined below |
-| 4.3 | String & API obfuscation | 📝 Outlined below |
-| 4.4 | Scripted deobfuscation | 📝 Outlined below |
+| 4.1 | [UPX & common packers](01-upx-and-packers/) | ✅ Built |
+| 4.2 | [Custom packers & unpacking stubs](02-custom-packers/) | ✅ Built |
+| 4.3 | [String & API obfuscation](03-string-api-obfuscation/) | ✅ Built |
+| 4.4 | [Scripted deobfuscation](04-scripted-deobfuscation/) | ✅ Built |
 
 ---
 
