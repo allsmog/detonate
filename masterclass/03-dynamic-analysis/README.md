@@ -12,9 +12,9 @@ recommended (static-first is the professional habit). **Read
 | # | Module | Status |
 |---|--------|--------|
 | 3.1 | [Your first detonation](01-detonate-first-detonation/) | ✅ Fully built (flagship) |
-| 3.2 | Process trees & syscall behavior | 📝 Outlined below |
-| 3.3 | Network behavior & C2 | 📝 Outlined below |
-| 3.4 | MITRE ATT&CK mapping | 📝 Outlined below |
+| 3.2 | [Process trees & syscall behavior](02-process-trees/) | ✅ Built |
+| 3.3 | [Network behavior & C2](03-network-and-c2/) | ✅ Built |
+| 3.4 | [MITRE ATT&CK mapping](04-mitre-attack/) | ✅ Built |
 
 ---
 
