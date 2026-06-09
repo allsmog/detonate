@@ -11,9 +11,9 @@ scripting). [Level 3.3](../03-dynamic-analysis/) (network/C2). **Read
 
 | # | Module | Status |
 |---|--------|--------|
-| 6.1 | Decrypting embedded config | 📝 Outlined below |
-| 6.2 | Building a config extractor | 📝 Outlined below |
-| 6.3 | From artifacts to intelligence | 📝 Outlined below |
+| 6.1 | [Decrypting embedded config](01-decrypting-config/) | ✅ Built |
+| 6.2 | [Building a config extractor](02-building-extractor/) | ✅ Built |
+| 6.3 | [From artifacts to intelligence](03-artifacts-to-intelligence/) | ✅ Built |
 
 ---
 
