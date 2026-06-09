@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a problem with the Detonate platform
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. **Do not** include live malware samples or
+        un-defanged IOCs. For security vulnerabilities, use private reporting
+        (see SECURITY.md) instead of a public issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+      placeholder: When I submit a URL, the analysis hangs at "queued"...
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to trigger the bug.
+      placeholder: |
+        1. Run `make dev`
+        2. POST to /api/v1/submit-url with ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Docker version, commit SHA, which components are running.
+      placeholder: "Ubuntu 22.04, Docker 27.x, commit abc1234, worker running"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste relevant logs (redact secrets and any IOCs).
+      render: shell
+  - type: checkboxes
+    id: confirms
+    attributes:
+      label: Confirmations
+      options:
+        - label: I am not including live malware or un-defanged IOCs in this issue.
+          required: true
+        - label: This is not a security vulnerability (those go via private reporting).
+          required: true

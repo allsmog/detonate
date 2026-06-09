@@ -4,6 +4,13 @@
 
 Submit files or URLs, execute them in an isolated Docker/QEMU sandbox, and observe behavior in real-time: process trees, network traffic, file drops, MITRE ATT&CK mapping, AI-powered analysis, and more.
 
+> ### 🎓 New here to *learn* malware reverse engineering?
+> Detonate doubles as a hands-on **[Malware Reverse Engineering Masterclass](masterclass/)** —
+> a lab-driven curriculum (foundations → static → dynamic → unpacking →
+> anti-analysis → config extraction → capstone) where this sandbox is your lab
+> bench. Start at **[`masterclass/`](masterclass/)**, and read
+> **[`masterclass/SAFETY.md`](masterclass/SAFETY.md)** before touching a sample.
+
 ```
                       +------------------+
                       |   Next.js 16     |
@@ -239,6 +246,14 @@ make suricata-build  # Build Suricata IDS image
 make mitre-pull      # Download MITRE ATT&CK dataset
 make ollama-pull     # Pull Ollama AI model
 ```
+
+## Learn & contribute
+
+- 🎓 **[Masterclass](masterclass/)** — the malware reverse-engineering curriculum.
+- 🧪 **[masterclass/SAFETY.md](masterclass/SAFETY.md)** — how to handle samples safely and legally. **Read before detonating anything.**
+- 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** — contribute platform code or curriculum modules.
+- 🔒 **[SECURITY.md](SECURITY.md)** — report vulnerabilities and sandbox escapes responsibly.
+- 📜 **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — community standards.
 
 ## License
 
