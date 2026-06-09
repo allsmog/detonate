@@ -11,9 +11,9 @@ internals and assembly, skim and move to [Level 2](../02-static-analysis/).
 | # | Module | Status |
 |---|--------|--------|
 | 1.1 | [PE & ELF anatomy](01-pe-anatomy/) | ✅ Fully built (flagship) |
-| 1.2 | x86/x64 assembly survival kit | 📝 Outlined below |
-| 1.3 | The RE toolchain | 📝 Outlined below |
-| 1.4 | File triage & hashing | 📝 Outlined below |
+| 1.2 | [x86/x64 assembly survival kit](02-assembly-survival-kit/) | ✅ Built |
+| 1.3 | [The RE toolchain](03-re-toolchain/) | ✅ Built |
+| 1.4 | [File triage & hashing](04-file-triage/) | ✅ Built |
 
 ---
 

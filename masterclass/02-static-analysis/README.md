@@ -10,10 +10,10 @@ Static analysis is cheap, safe, and where good analysts start every case.*
 
 | # | Module | Status |
 |---|--------|--------|
-| 2.1 | Strings & embedded IOCs | 📝 Outlined below |
-| 2.2 | Imports as behavior | 📝 Outlined below |
-| 2.3 | Entropy & packing detection | 📝 Outlined below |
-| 2.4 | Writing YARA rules | 📝 Outlined below |
+| 2.1 | [Strings & embedded IOCs](01-strings-and-iocs/) | ✅ Built |
+| 2.2 | [Imports as behavior](02-imports-as-behavior/) | ✅ Built |
+| 2.3 | [Entropy & packing detection](03-entropy-and-packing/) | ✅ Built |
+| 2.4 | [Writing YARA rules](04-writing-yara-rules/) | ✅ Built |
 
 ---
 
