@@ -124,6 +124,18 @@ print(rc4(b"unpackme!",raw[off+6:off+6+ln]).decode())
 PY
 else echo "  SKIP  7 capstone (upx not installed)"; fi
 
+echo "== Windows PE supplement =="
+if have x86_64-w64-mingw32-gcc; then
+  x86_64-w64-mingw32-gcc -O2 "$ROOT/windows-pe/win_imports.c" -o wi.exe -ladvapi32 -lwininet 2>/dev/null
+  x86_64-w64-mingw32-gcc -O2 "$ROOT/windows-pe/win_antidbg.c" -o wa.exe 2>/dev/null
+  check "win win_imports is PE32+" "PE32+" bash -c "file wi.exe"
+  if python3 -c "import pefile" 2>/dev/null; then
+    check "win imports show network capability" "InternetOpenA" python3 -c "import pefile;print([i.name.decode() for d in pefile.PE('wi.exe').DIRECTORY_ENTRY_IMPORT for i in d.imports if i.name])"
+    check "win imports show persistence (Run key API)" "RegOpenKeyExA" python3 -c "import pefile;print([i.name.decode() for d in pefile.PE('wi.exe').DIRECTORY_ENTRY_IMPORT for i in d.imports if i.name])"
+    check "win antidbg imports IsDebuggerPresent" "IsDebuggerPresent" python3 -c "import pefile;print([i.name.decode() for d in pefile.PE('wa.exe').DIRECTORY_ENTRY_IMPORT for i in d.imports if i.name])"
+  else echo "  SKIP  win pefile checks (pefile not installed)"; fi
+else echo "  SKIP  windows-pe (mingw-w64 not installed)"; fi
+
 echo ""
 echo "==================================="
 echo "  RESULTS: $PASS passed, $FAIL failed"

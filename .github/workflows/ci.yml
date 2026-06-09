@@ -45,7 +45,8 @@ jobs:
       - name: Install RE toolchain (best-effort; harness SKIPs anything missing)
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q gcc gdb binutils strace file upx-ucl yara || true
-          python3 -m pip install --quiet unicorn || true
+          sudo apt-get install -y -q gcc gdb binutils strace file upx-ucl yara \
+            gcc-mingw-w64-x86-64 || true
+          python3 -m pip install --quiet unicorn pefile || true
       - name: Build & test every training binary
         run: bash masterclass/tools/build_and_test.sh

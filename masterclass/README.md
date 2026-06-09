@@ -128,6 +128,14 @@ Every module follows the same shape (see [`_template/`](_template/)):
 |---|--------|-----------|
 | 7.1 | [Unknown sample challenge](07-capstone/) | Run the full kill chain on an unknown sample and deliver a complete analyst report. Ships a self-contained benign challenge (`crackmalware`) + sealed answer key. ✅ **Built & tested** |
 
+
+### Supplement — Windows / PE
+*Real-world RE is mostly Windows. Apply Levels 1–6 to actual PE binaries.*
+
+| Module | You'll learn |
+|--------|--------------|
+| [Windows PE supplement](windows-pe/) | PE imports as capability, Windows anti-debug (`IsDebuggerPresent` + PEB), on real cross-compiled `.exe`s. ✅ **Built & tested (static)** |
+
 ---
 
 ## Tracks (if you don't want to go linear)
