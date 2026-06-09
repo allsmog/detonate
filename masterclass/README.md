@@ -135,6 +135,7 @@ Every module follows the same shape (see [`_template/`](_template/)):
 | Module | You'll learn |
 |--------|--------------|
 | [Windows PE supplement](windows-pe/) | PE imports as capability, Windows anti-debug (`IsDebuggerPresent` + PEB), on real cross-compiled `.exe`s. ✅ **Built & tested (static)** |
+| [Real-sample practice](real-samples/) | Bridge to authentic malware: a curated family catalog + a sample-verification tool (pin the exact SHA-256, then triage). ✅ **Built & tested** |
 
 ---
 

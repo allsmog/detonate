@@ -136,6 +136,11 @@ if have x86_64-w64-mingw32-gcc; then
   else echo "  SKIP  win pefile checks (pefile not installed)"; fi
 else echo "  SKIP  windows-pe (mingw-w64 not installed)"; fi
 
+echo "== Real-samples toolkit =="
+KNOWN_HASH=$(sha256sum /bin/ls | cut -d' ' -f1)
+check "real-samples verify MATCH" "MATCH" python3 "$ROOT/real-samples/verify_sample.py" /bin/ls --sha256 "$KNOWN_HASH"
+check "real-samples verify MISMATCH rejects" "MISMATCH" bash -c "python3 '$ROOT/real-samples/verify_sample.py' /bin/ls --sha256 deadbeef; true"
+
 echo ""
 echo "==================================="
 echo "  RESULTS: $PASS passed, $FAIL failed"
