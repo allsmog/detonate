@@ -50,9 +50,9 @@ def align(value: int, alignment: int) -> int:
 
 
 def build_pe() -> bytes:
-    FILE_ALIGNMENT = 0x200
-    SECTION_ALIGNMENT = 0x1000
-    PE_OFFSET = 0x80
+    FILE_ALIGNMENT = 0x200  # noqa: N806 — PE field names mirror the spec
+    SECTION_ALIGNMENT = 0x1000  # noqa: N806 — PE field names mirror the spec
+    PE_OFFSET = 0x80  # noqa: N806 — PE field names mirror the spec
 
     # Build section data first to know sizes
     section_data = b"\x00".join(EMBEDDED_STRINGS) + b"\x00"

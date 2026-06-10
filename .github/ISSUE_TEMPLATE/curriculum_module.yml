@@ -1,0 +1,40 @@
+name: Curriculum module
+description: Propose or claim a Detonate Masterclass module
+title: "[Module]: "
+labels: ["curriculum"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to propose a new module or claim an outlined one. Read
+        CONTRIBUTING.md (sample rules) and masterclass/SAFETY.md first.
+  - type: input
+    id: module
+    attributes:
+      label: Module
+      description: Level and title, e.g. "2.2 — Imports as behavior"
+    validations:
+      required: true
+  - type: textarea
+    id: objectives
+    attributes:
+      label: Learning objectives
+      description: Testable, verb-first outcomes the learner will achieve.
+    validations:
+      required: true
+  - type: textarea
+    id: lab
+    attributes:
+      label: Lab plan
+      description: What sample (benign training binary vs referenced real sample by SHA-256), and what the learner does in Detonate / locally.
+    validations:
+      required: true
+  - type: checkboxes
+    id: sample-rules
+    attributes:
+      label: Sample handling
+      options:
+        - label: My lab uses a benign training binary (source only) OR references a real sample by hash without committing it.
+          required: true
+        - label: All IOCs in my writeup will be defanged.
+          required: true

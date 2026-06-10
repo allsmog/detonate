@@ -5,9 +5,13 @@ import type {
   AnalysisListResponse,
   AnalysisMedia,
   AnalysisResult,
+  ChallengeListResponse,
+  ChallengeSummary,
   ChatMessage,
   Conversation,
+  FlagSubmitResponse,
   HealthResponse,
+  LeaderboardResponse,
   MachineListResponse,
   MITREAnalysisResponse,
   MITRETechniqueDetail,
@@ -562,6 +566,33 @@ class ApiClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description }),
     });
+  }
+
+  // CTF Challenges
+  async getChallenges(player?: string): Promise<ChallengeListResponse> {
+    const q = player ? `?player=${encodeURIComponent(player)}` : "";
+    return this.request<ChallengeListResponse>(`/challenges${q}`);
+  }
+
+  async getChallenge(slug: string, player?: string): Promise<ChallengeSummary> {
+    const q = player ? `?player=${encodeURIComponent(player)}` : "";
+    return this.request<ChallengeSummary>(`/challenges/${slug}${q}`);
+  }
+
+  async submitFlag(
+    slug: string,
+    flag: string,
+    player?: string
+  ): Promise<FlagSubmitResponse> {
+    return this.request<FlagSubmitResponse>(`/challenges/${slug}/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ flag, player }),
+    });
+  }
+
+  async getLeaderboard(): Promise<LeaderboardResponse> {
+    return this.request<LeaderboardResponse>("/challenges/leaderboard");
   }
 }
 

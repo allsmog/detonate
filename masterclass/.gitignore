@@ -1,0 +1,35 @@
+# Compiled training-binary artifacts — NEVER commit binaries (see SAFETY.md).
+# Source (.c/.py/.sh/.yar/.json/.md) IS tracked; built outputs are not.
+*.o
+*.so
+*.out
+
+# Known per-module build targets (built in-place by learners)
+**/demo_O0
+**/demo_O2
+**/crackme1
+**/stringy
+**/net_tool
+**/calc_tool
+**/dynres
+**/packme
+**/packme_upx
+**/packme_unpacked
+**/multistage
+**/beacon_http
+**/crypt_stub
+**/obf_strings
+**/vmcheck
+**/antidbg
+**/staller
+**/configbot
+**/sample_beacon
+
+# Capstone build artifacts
+07-capstone/challenge/crackmalware
+07-capstone/challenge/crackmalware_unpacked
+07-capstone/challenge/cm_unpacked
+
+# Working dirs / captures
+**/*.pcap
+beacon.pcap

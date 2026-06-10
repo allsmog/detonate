@@ -61,3 +61,21 @@ sandbox/mitre/enterprise-attack.json
 *.bak
 *.tmp
 nohup.out
+
+# --- Malware samples: NEVER commit live samples (see masterclass/SAFETY.md) ---
+# Working directories for samples you fetch/build in your lab
+samples/
+**/samples/
+# Compiled outputs of the masterclass training binaries (source .c IS tracked)
+masterclass/**/sample_beacon
+masterclass/**/*.out
+# Common executable / sample artifacts
+*.exe
+*.dll
+*.sys
+*.bin
+*.dmp
+*.dump
+# Password-protected sample archives ("infected" convention)
+*.zip.infected
+*.malz

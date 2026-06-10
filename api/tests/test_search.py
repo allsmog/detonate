@@ -95,6 +95,6 @@ async def test_hash_lookup(client):
 
 @pytest.mark.asyncio
 async def test_hash_lookup_not_found(client):
-    resp = await client.get("/api/v1/search/hash/0000000000000000000000000000000000000000000000000000000000000000")
+    resp = await client.get("/api/v1/search/hash/" + "0" * 64)
     assert resp.status_code == 200
     assert resp.json()["total"] == 0

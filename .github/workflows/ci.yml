@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python-lint:
+    name: Python lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Ruff check
+        run: uvx ruff check .
+        working-directory: api
+
+  sample-safety:
+    name: Sample-safety guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if a malware binary was committed
+        run: |
+          # The repo must never contain live sample binaries (see masterclass/SAFETY.md).
+          # Source for benign training binaries (.c/.py) is allowed; compiled binaries are not.
+          matches=$(git ls-files | grep -iE '\.(exe|dll|sys|bin|dmp|dump)$' || true)
+          if [ -n "$matches" ]; then
+            echo "::error::Committed binary/sample artifacts detected:"
+            echo "$matches"
+            exit 1
+          fi
+          echo "No committed sample binaries. Good."
+
+  masterclass-labs:
+    name: Masterclass lab harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install RE toolchain (best-effort; harness SKIPs anything missing)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q gcc gdb binutils strace file upx-ucl yara \
+            gcc-mingw-w64-x86-64 || true
+          python3 -m pip install --quiet unicorn pefile || true
+      - name: Build & test every training binary
+        run: bash masterclass/tools/build_and_test.sh
