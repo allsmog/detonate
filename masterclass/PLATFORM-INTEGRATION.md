@@ -25,6 +25,13 @@ a points leaderboard. Backend: `api/detonate/{models,services,api/routes}/
 challenge*`. Frontend: `frontend/src/app/challenges/`. Tests:
 `api/tests/test_challenges.py` (8 tests).
 
+Real screenshots of the running app (Next.js frontend + FastAPI + Postgres,
+captured with headless Chromium):
+
+![Challenges list + leaderboard](assets/screenshots/challenges-list.png)
+
+![Challenge detail with hints and flag submission](assets/screenshots/challenge-detail.png)
+
 ## 2. Labs reference the real engine
 
 Throughout the curriculum, labs point at the actual platform code rather than a
@@ -48,7 +55,9 @@ idempotently across repeated runs against the real database.
 challenges, rejecting a wrong flag, accepting the real lab answer
 (`TRAIN-2026` → "Correct! +250 points", first_solve=True), and a leaderboard
 reflecting persisted solves across players — all exercised through the actual
-FastAPI request/response cycle with DB commits.
+FastAPI request/response cycle with DB commits. The **frontend** was
+rendered against this stack and screenshotted (above), confirming the UI works
+end to end with live data.
 
 **c. Platform engine on masterclass samples.** The real
 `run_static_analysis()` was run on the Module 2.1 `stringy` training binary and
