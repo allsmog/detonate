@@ -66,13 +66,31 @@ and parsed the Windows PE (`win_imports.exe`) entry point as `0x1410` — matchi
 the value the Windows supplement teaches. The curriculum, the training binaries,
 and the platform agree.
 
-## 4. Honest scope note
+**d. Full dynamic detonation through the real sandbox container.** The Level 3
+training binaries were detonated end-to-end through the actual
+`detonate-sandbox-linux` image and guest agent (`sandbox/linux/guest_agent.py`)
+— the same image/agent `DockerMachinery` uses — with networking isolated
+(`--network none`). The platform produced exactly the telemetry the curriculum
+teaches:
 
-Full **dynamic detonation** (submitting a sample and running it in the
-Docker/QEMU sandbox) requires Docker, which wasn't available in the environment
-where this was verified. The dynamic *labs* were instead verified independently
-at the syscall level (`strace`) in
-[`tools/build_and_test.sh`](tools/build_and_test.sh), and the dynamic modules
-reference the exact guest-agent code that performs the same capture. Standing up
-the sandbox image (`make sandbox-build`) on a Docker-capable host enables the
-end-to-end detonation path described in Level 3.
+```
+# sample_beacon (Module 3.1) — the three pillars:
+processes:       pid=12  /sample/sample_beacon
+network:         tcp://8.8.8.8:53          (DNS attempt — offline, still captured)
+files created:   /tmp/.beacon_marker       (the documented drop)
+
+# multistage (Module 3.2) — the process tree:
+processes:       pid=11        /sample/multistage
+                 pid=12 ppid=11 /bin/echo "stage1-payload-executed"
+```
+
+Reproduce with [`tools/detonate_demo.sh`](tools/detonate_demo.sh) (needs Docker).
+The captured process tree (parent→child `clone`+`execve`), network attempts, and
+file drop match each module's documented solution exactly.
+
+## 4. Scope note
+
+The above covers the Linux/Docker path end to end. The **Windows/QEMU** dynamic
+path (Sysmon-based telemetry) needs a Windows guest image and a KVM-capable host;
+its labs are in the [Windows supplement](windows-pe/) with the static half fully
+reproducible and the dynamic half documented for your Windows lab.

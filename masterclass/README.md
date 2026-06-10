@@ -68,8 +68,9 @@ Every module follows the same shape (see [`_template/`](_template/)):
 > **Status: all 23 modules + capstone are built with working, tested labs.**
 > Every lab uses a purpose-built *benign* training binary (source committed,
 > binaries gitignored) and a complete solution. Reproduce the whole test sweep
-> with [`tools/build_and_test.sh`](tools/build_and_test.sh) — 34 automated
-> checks across all seven levels.
+> with [`tools/build_and_test.sh`](tools/build_and_test.sh) — 40 automated
+> checks across all seven levels, plus [`tools/detonate_demo.sh`](tools/detonate_demo.sh)
+> for a real end-to-end detonation through the sandbox container.
 
 ### Level 1 — Foundations
 *Goal: read a binary's structure and speak the language of the machine.*
