@@ -2,7 +2,22 @@
 
 **Open-source malware analysis sandbox.**
 
-Submit files or URLs, execute them in an isolated Docker/QEMU sandbox, and observe behavior in real-time: process trees, network traffic, file drops, MITRE ATT&CK mapping, AI-powered analysis, and more.
+Submit files or URLs, execute them in isolated Docker/QEMU sandboxes, and
+observe behavior in real time: process trees, network traffic, file drops,
+MITRE ATT&CK mapping, YARA and Suricata signals, threat-intel enrichment,
+AI-assisted analysis, and report export.
+
+![Detonate social preview](docs/social-preview.png)
+
+## At a glance
+
+| Area | Details |
+| --- | --- |
+| Static analysis | Hashing, file typing, PE/ELF parsing, strings, entropy, YARA |
+| Dynamic analysis | Docker Linux sandbox, QEMU Windows path, process tree, PCAP, filesystem diff, screenshots, VNC |
+| Detection | MITRE ATT&CK mapping, Suricata alerts, behavior rules, threat-intel enrichment |
+| Outputs | HTML, Markdown, CSV, JSON, STIX 2.1, IOC exports |
+| Learning path | Malware reverse engineering masterclass with lab-driven exercises |
 
 > ### 🎓 New here to *learn* malware reverse engineering?
 > Detonate doubles as a hands-on **[Malware Reverse Engineering Masterclass](masterclass/)** —
